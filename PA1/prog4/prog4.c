@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "check.h"
+#include <sys/time.h>
+#include <sys/resource.h>
 
 int x[5] = {1,2,3,4,5};
 
@@ -16,7 +17,6 @@ void allocate()
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
         }
-        free(p);  // makes sure that the free is always activated
     }
 }
 
@@ -33,7 +33,6 @@ void allocate1()
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
         }
-        free(p);  // makes sure that the free is always activated
     }
 }
 
@@ -52,16 +51,32 @@ void allocate2()
 
 
 int main(int argc, char const *argv[]) {
-  int i;
-  int *p;
-  printf("Executing the code ......\n");
-  allocate();
+    struct rusage usage;
+    struct timeval;
+    int i, j, k = 0;
 
-  for (i=0 ; i<10000 ; i++)
-  {
-    p = malloc(1000 * sizeof(int));
-    free (p);
-  }
-  printf("Program execution successfull\n");
-  return 0;
+    // Get resource usage before the execution
+    // Get resource usage before the execution
+    getrusage(RUSAGE_SELF, &usage);
+    long start = usage.ru_nivcsw;   // Starting voluntary context switches
+
+    int *p;
+    printf("Executing the code ......\n");
+    allocate();
+
+    for (i = 0; i < 10000; i++) {
+        p = malloc(1000 * sizeof(int));
+        free(p);
+    }
+
+    // Get resource usage after the execution
+    getrusage(RUSAGE_SELF, &usage);
+    long end = usage.ru_nivcsw;   // Ending voluntary context switches
+
+    long total_voluntary_context_switches = end - start;
+    printf("start voluntary context switches: %ld\n", start);
+    printf("end voluntary context switches: %ld\n", end);
+    printf("Program execution successful\n");
+
+    return 0;
 }
