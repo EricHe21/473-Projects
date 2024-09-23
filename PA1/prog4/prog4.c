@@ -9,24 +9,35 @@ void allocate()
 {
     int i;
     int *p;
-    for(i =1 ; i<1000000 ; i++)
+    for (i = 1; i < 1000000; i++)
     {
-      p = malloc(500 * sizeof(int));
-      if(func(i)) { free (p);}
+        p = malloc(500 * sizeof(int));
+        if (p == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+        }
+        free(p);  // makes sure that the free is always activated
     }
 }
 
+
+
 void allocate1()
 {
-  int i;
-  int *p;
-  for (i=1 ; i<10000 ; i++)
-  {
-    p = malloc(1000 * sizeof(int));
-    if(i & 1)
-      free (p);
-  }
+    int i;
+    int *p;
+    for (i = 1; i < 10000; i++)
+    {
+        p = malloc(1000 * sizeof(int));
+        if (p == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+        }
+        free(p);  // makes sure that the free is always activated
+    }
 }
+
+
 
 void allocate2()
 {
